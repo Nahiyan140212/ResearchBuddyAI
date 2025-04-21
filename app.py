@@ -13,7 +13,7 @@ def main():
     """Main function to run the Streamlit app."""
     st.set_page_config(page_title="ResearchBuddy AI: A Multi-Model AI Assistant", layout="wide")
     
-    st.title("🤖 Multi-Model AI Assistant")
+    st.title("ResearchBuddy AI: A Multi-Model AI Assistant")
     
     # Initialize session state
     initialize_session_state()
