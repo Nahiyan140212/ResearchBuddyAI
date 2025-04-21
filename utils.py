@@ -21,6 +21,9 @@ def initialize_session_state():
     
     if "uploaded_file_name" not in st.session_state:
         st.session_state.uploaded_file_name = None
+        
+    if "uploaded_image" not in st.session_state:
+        st.session_state.uploaded_image = None
 
 def format_message(message):
     """
