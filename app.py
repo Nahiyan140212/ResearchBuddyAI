@@ -6,6 +6,8 @@ from file_handler import process_uploaded_file
 from image_handler import generate_image
 from utils import initialize_session_state
 from api_utils import get_euron_api_key
+import io
+from PIL import Image
 
 def main():
     """Main function to run the Streamlit app."""
@@ -61,6 +63,7 @@ def main():
             st.session_state.messages = []
             st.session_state.uploaded_file_content = None
             st.session_state.uploaded_file_name = None
+            st.session_state.uploaded_image = None
             st.experimental_rerun()
     
     # Main content area
@@ -69,12 +72,19 @@ def main():
     with col2:
         # File upload section
         st.subheader("File Upload")
-        uploaded_file = st.file_uploader("Upload a file", type=["txt", "pdf", "csv", "xlsx"])
+        uploaded_file = st.file_uploader("Upload a file", type=["txt", "pdf", "csv", "xlsx", "jpg", "jpeg", "png"])
         if uploaded_file:
             file_details = process_uploaded_file(uploaded_file)
             st.session_state.uploaded_file_content = file_details["content"]
             st.session_state.uploaded_file_name = file_details["name"]
-            st.success(f"File uploaded: {file_details['name']}")
+            
+            # If it's an image, store it separately and display it
+            if file_details["is_image"]:
+                st.session_state.uploaded_image = file_details["image"]
+                st.image(file_details["image"], caption=file_details["name"], use_column_width=True)
+                st.info("Image uploaded! You can now ask questions about this image.")
+            else:
+                st.success(f"File uploaded: {file_details['name']}")
         
         # Image generation section
         st.subheader("Image Generation")
@@ -118,6 +128,15 @@ def main():
             with st.chat_message("assistant"):
                 with st.spinner("Thinking..."):
                     message_placeholder = st.empty()
+                    
+                    # Check if an image is uploaded and the selected model supports image analysis
+                    has_image = st.session_state.uploaded_image is not None
+                    model_supports_images = MODEL_CAPABILITIES.get(selected_model, {}).get("Image Analysis", False)
+                    
+                    # If image is uploaded and model doesn't support images, add a warning
+                    if has_image and not model_supports_images:
+                        st.warning(f"Note: {selected_model} doesn't fully support image analysis. For best results with images, try using Google Gemini 2.5 Pro Exp.")
+                    
                     response = handle_chat_message(
                         user_input,
                         st.session_state.messages,
@@ -126,7 +145,8 @@ def main():
                         api_key,  # This parameter is now ignored but kept for compatibility
                         st.session_state.temperature,
                         st.session_state.max_tokens,
-                        st.session_state.uploaded_file_content
+                        st.session_state.uploaded_file_content,
+                        st.session_state.uploaded_image if has_image else None
                     )
                     message_placeholder.markdown(response)
             
