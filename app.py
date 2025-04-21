@@ -11,7 +11,7 @@ from PIL import Image
 
 def main():
     """Main function to run the Streamlit app."""
-    st.set_page_config(page_title="Multi-Model AI Assistant", layout="wide")
+    st.set_page_config(page_title="ResearchBuddy AI: A Multi-Model AI Assistant", layout="wide")
     
     st.title("🤖 Multi-Model AI Assistant")
     
@@ -48,14 +48,14 @@ def main():
             api_key = "your-api-key-here"
             """)
         else:
-            st.success("API key found in secrets.")
+            st.success("Please Select the Model Based on your Desired Task.")
         
         # Temperature slider
         temperature = st.slider("Temperature", min_value=0.0, max_value=1.0, value=0.7, step=0.1)
         st.session_state.temperature = temperature
         
         # Max tokens slider
-        max_tokens = st.slider("Max Tokens", min_value=100, max_value=4000, value=1000, step=100)
+        max_tokens = st.slider("Max Tokens", min_value=100, max_value=2500, value=1000, step=100)
         st.session_state.max_tokens = max_tokens
         
         # Clear chat button
