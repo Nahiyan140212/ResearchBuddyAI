@@ -20,67 +20,78 @@ MODEL_CAPABILITIES = {
         "Text Generation": True,
         "File Analysis": True,
         "Image Generation": False,
-        "Code Generation": True
+        "Code Generation": True,
+        "Image Analysis": False
     },
     "OpenAI GPT 4.1 Mini": {
         "Text Generation": True,
         "File Analysis": True,
         "Image Generation": False,
-        "Code Generation": True
+        "Code Generation": True,
+        "Image Analysis": False
     },
     "Google Gemini 2.5 Pro Exp": {
         "Text Generation": True,
         "File Analysis": True,
         "Image Generation": True,
-        "Code Generation": True
+        "Code Generation": True,
+        "Image Analysis": True
     },
     "Google Gemini 2.0 Flash": {
         "Text Generation": True,
         "File Analysis": True,
         "Image Generation": False,
-        "Code Generation": True
+        "Code Generation": True,
+        "Image Analysis": False
     },
     "Meta Llama 4 Scout": {
         "Text Generation": True,
         "File Analysis": True,
         "Image Generation": False,
-        "Code Generation": True
+        "Code Generation": True,
+        "Image Analysis": False
     },
     "Meta Llama 4 Maverick": {
         "Text Generation": True,
         "File Analysis": True,
         "Image Generation": False,
-        "Code Generation": True
+        "Code Generation": True,
+        "Image Analysis": False
     },
     "Meta Llama 3.3 70b": {
         "Text Generation": True,
         "File Analysis": True,
         "Image Generation": False,
-        "Code Generation": True
+        "Code Generation": True,
+        "Image Analysis": False
     },
     "DeepSeek R1 Distilled 70B": {
         "Text Generation": True,
         "File Analysis": True,
         "Image Generation": False,
-        "Code Generation": True
+        "Code Generation": True,
+        "Image Analysis": False
     },
     "Qwen QwQ 32B": {
         "Text Generation": True,
         "File Analysis": True,
         "Image Generation": False,
-        "Code Generation": True
+        "Code Generation": True,
+        "Image Analysis": False
     },
     "Mistral Saba 24B": {
         "Text Generation": True,
         "File Analysis": True,
         "Image Generation": False,
-        "Code Generation": True
+        "Code Generation": True,
+        "Image Analysis": False
     }
 }
 
 # Map for selecting appropriate model for special tasks
 SPECIALIZED_MODELS = {
     "image_generation": "gemini-2.5-pro-exp-03-25",  # Default model for image generation
+    "image_analysis": "gemini-2.5-pro-exp-03-25",    # Default model for image analysis
     "code_analysis": "gpt-4.1-mini",                 # Default model for code analysis
     "document_analysis": "llama-4-maverick-17b-128e-instruct"  # Default model for document analysis
 }
