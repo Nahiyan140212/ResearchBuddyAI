@@ -1,14 +1,11 @@
 import streamlit as st
 import os
-from dotenv import load_dotenv
-from config import AVAILABLE_MODELS, MODEL_CAPABILITIES
+from config import AVAILABLE_MODELS, MODEL_CAPABILITIES, DEFAULT_MODEL
 from chat_handler import handle_chat_message
 from file_handler import process_uploaded_file
 from image_handler import generate_image
 from utils import initialize_session_state
-
-# Load environment variables
-load_dotenv()
+from api_utils import get_euron_api_key
 
 def main():
     """Main function to run the Streamlit app."""
@@ -39,10 +36,17 @@ def main():
         for capability, supported in capabilities.items():
             st.checkbox(capability, value=supported, disabled=True)
         
-        # API key input (hidden)
-        api_key = st.text_input("API Key", type="password", value=os.getenv("API_KEY", ""))
-        if api_key:
-            st.session_state.api_key = api_key
+        # Check if API key is available
+        api_key = get_euron_api_key()
+        if not api_key:
+            st.warning("API key not found in secrets. Please add it to your .streamlit/secrets.toml file.")
+            st.code("""
+            # Example secrets.toml file
+            [euron]
+            api_key = "your-api-key-here"
+            """)
+        else:
+            st.success("API key found in secrets.")
         
         # Temperature slider
         temperature = st.slider("Temperature", min_value=0.0, max_value=1.0, value=0.7, step=0.1)
@@ -79,7 +83,7 @@ def main():
             with st.spinner("Generating image..."):
                 image_result = generate_image(
                     image_prompt, 
-                    st.session_state.api_key, 
+                    api_key,  # This parameter is now ignored but kept for compatibility
                     selected_model
                 )
                 if "image" in image_result:
@@ -119,7 +123,7 @@ def main():
                         st.session_state.messages,
                         selected_model,
                         AVAILABLE_MODELS[selected_model],
-                        st.session_state.api_key,
+                        api_key,  # This parameter is now ignored but kept for compatibility
                         st.session_state.temperature,
                         st.session_state.max_tokens,
                         st.session_state.uploaded_file_content
