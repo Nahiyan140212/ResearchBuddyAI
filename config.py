@@ -1,11 +1,11 @@
 # Configuration for models and their capabilities
-
 # Available models with their IDs
 AVAILABLE_MODELS = {
     "OpenAI GPT 4.1 Nano": "gpt-4.1-nano",
     "OpenAI GPT 4.1 Mini": "gpt-4.1-mini",
     "Google Gemini 2.5 Pro Exp": "gemini-2.5-pro-exp-03-25",
     "Google Gemini 2.0 Flash": "gemini-2.0-flash-001",
+    "Google Gemini 2.0 Flash Exp": "gemini-2.0-flash-exp",
     "Meta Llama 4 Scout": "llama-4-scout-17b-16e-instruct",
     "Meta Llama 4 Maverick": "llama-4-maverick-17b-128e-instruct",
     "Meta Llama 3.3 70b": "llama-3.3-70b-versatile",
@@ -43,6 +43,13 @@ MODEL_CAPABILITIES = {
         "Image Generation": False,
         "Code Generation": True,
         "Image Analysis": False
+    },
+    "Google Gemini 2.0 Flash Exp": {
+        "Text Generation": True,
+        "File Analysis": True,
+        "Image Generation": True,
+        "Code Generation": True,
+        "Image Analysis": True
     },
     "Meta Llama 4 Scout": {
         "Text Generation": True,
@@ -90,9 +97,9 @@ MODEL_CAPABILITIES = {
 
 # Map for selecting appropriate model for special tasks
 SPECIALIZED_MODELS = {
-    "image_generation": "gemini-2.5-pro-exp-03-25",  # Default model for image generation
-    "image_analysis": "gemini-2.5-pro-exp-03-25",    # Default model for image analysis
-    "code_analysis": "gpt-4.1-mini",                 # Default model for code analysis
+    "image_generation": "gemini-2.0-flash-exp",        # Updated to use the new model
+    "image_analysis": "gemini-2.5-pro-exp-03-25",      # Default model for image analysis
+    "code_analysis": "gpt-4.1-mini",                   # Default model for code analysis
     "document_analysis": "llama-4-maverick-17b-128e-instruct"  # Default model for document analysis
 }
 
