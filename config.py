@@ -90,3 +90,6 @@ API_ENDPOINTS = {
     "chat": "https://api.euron.one/api/v1/euri/alpha/chat/completions",
     "image": "https://api.euron.one/api/v1/euri/alpha/images/generate"  # Assuming this endpoint for image generation
 }
+
+# Default model if none selected
+DEFAULT_MODEL = "gemini-2.5-pro-exp-03-25"
