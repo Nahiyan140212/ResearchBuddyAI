@@ -2,6 +2,8 @@ import pandas as pd
 import io
 import base64
 import streamlit as st
+import os
+from PIL import Image
 
 def process_uploaded_file(uploaded_file):
     """
@@ -17,7 +19,9 @@ def process_uploaded_file(uploaded_file):
         "name": uploaded_file.name,
         "size": uploaded_file.size,
         "type": uploaded_file.type,
-        "content": None
+        "content": None,
+        "is_image": False,
+        "image": None
     }
     
     try:
@@ -28,9 +32,20 @@ def process_uploaded_file(uploaded_file):
             file_details["content"] = content
             
         elif uploaded_file.type == "application/pdf":
-            # For PDF files, we'd typically use PyPDF2 or similar
-            # Since we don't have that in requirements, we'll return a placeholder
-            file_details["content"] = "PDF content extraction. In production, use PyPDF2 or similar library."
+            # Handle PDF files
+            try:
+                import PyPDF2
+                pdf_reader = PyPDF2.PdfReader(io.BytesIO(uploaded_file.getvalue()))
+                pdf_text = ""
+                
+                # Extract text from each page
+                for page_num in range(len(pdf_reader.pages)):
+                    page = pdf_reader.pages[page_num]
+                    pdf_text += page.extract_text() + "\n\n"
+                
+                file_details["content"] = pdf_text if pdf_text.strip() else "No extractable text found in PDF."
+            except ImportError:
+                file_details["content"] = "PDF content extraction. Please install PyPDF2 library."
             
         elif "csv" in uploaded_file.type:
             # Handle CSV files
@@ -64,6 +79,26 @@ def process_uploaded_file(uploaded_file):
             
             file_details["content"] = summary
             
+        # Handle image files
+        elif uploaded_file.type.startswith('image/'):
+            # Process image file
+            image = Image.open(uploaded_file)
+            
+            # Create a description of the image
+            width, height = image.size
+            format_type = image.format
+            mode = image.mode
+            
+            image_info = f"Image File Information:\n\n"
+            image_info += f"Filename: {uploaded_file.name}\n"
+            image_info += f"Format: {format_type}\n"
+            image_info += f"Mode: {mode}\n"
+            image_info += f"Dimensions: {width} x {height} pixels\n"
+            
+            file_details["content"] = image_info
+            file_details["is_image"] = True
+            file_details["image"] = image
+            
         else:
             # For unsupported file types
             file_details["content"] = f"Unsupported file type: {uploaded_file.type}"
@@ -88,3 +123,16 @@ def get_file_download_link(content, filename, mime_type):
     b64 = base64.b64encode(content.encode()).decode()
     href = f'<a href="data:{mime_type};base64,{b64}" download="{filename}">Download {filename}</a>'
     return href
+
+def encode_image(image_path):
+    """
+    Base64 encode an image file for sending to vision-capable models
+    
+    Args:
+        image_path: Path to the image file
+        
+    Returns:
+        str: Base64 encoded image string
+    """
+    with open(image_path, "rb") as image_file:
+        return base64.b64encode(image_file.read()).decode('utf-8')
