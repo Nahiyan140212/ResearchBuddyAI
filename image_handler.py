@@ -1,7 +1,8 @@
 import requests
 from PIL import Image
 import io
-from config import API_ENDPOINTS, SPECIALIZED_MODELS, MODEL_CAPABILITIES
+from config import SPECIALIZED_MODELS, MODEL_CAPABILITIES
+from api_utils import call_image_api
 
 def generate_image(prompt, api_key, selected_model_name):
     """
@@ -9,7 +10,7 @@ def generate_image(prompt, api_key, selected_model_name):
     
     Args:
         prompt (str): The description of the image to generate
-        api_key (str): API key for authentication
+        api_key (str): API key for authentication (legacy parameter, now uses secrets)
         selected_model_name (str): Current selected model name
         
     Returns:
@@ -25,30 +26,17 @@ def generate_image(prompt, api_key, selected_model_name):
         model_id = AVAILABLE_MODELS[selected_model_name]
     
     try:
-        # Prepare the API request
-        url = API_ENDPOINTS["image"]
-        headers = {
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {api_key}"
-        }
+        # Call the image API using our utility function
+        response_data = call_image_api(prompt=prompt, model_id=model_id)
         
-        payload = {
-            "model": model_id,
-            "prompt": prompt,
-            "n": 1,  # Number of images to generate
-            "size": "512x512"  # Image resolution
-        }
-        
-        # Send the request
-        response = requests.post(url, headers=headers, json=payload)
-        response.raise_for_status()  # Raise exception for HTTP errors
-        
-        data = response.json()
+        # Check for errors in the response
+        if "error" in response_data:
+            return {"error": response_data["error"]}
         
         # Check if image data is in the response
-        if "data" in data and len(data["data"]) > 0 and "url" in data["data"][0]:
+        if "data" in response_data and len(response_data["data"]) > 0 and "url" in response_data["data"][0]:
             # Get the image URL
-            image_url = data["data"][0]["url"]
+            image_url = response_data["data"][0]["url"]
             
             # Download the image
             image_response = requests.get(image_url)
