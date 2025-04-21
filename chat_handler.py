@@ -1,5 +1,5 @@
-import requests
-from config import API_ENDPOINTS, SPECIALIZED_MODELS, MODEL_CAPABILITIES
+from config import SPECIALIZED_MODELS, MODEL_CAPABILITIES
+from api_utils import call_euron_api
 
 def handle_chat_message(user_input, message_history, selected_model_name, model_id, api_key, temperature, max_tokens, file_content=None):
     """
@@ -10,7 +10,7 @@ def handle_chat_message(user_input, message_history, selected_model_name, model_
         message_history (list): List of previous message objects
         selected_model_name (str): Display name of the selected model
         model_id (str): ID of the model to use
-        api_key (str): API key for authentication
+        api_key (str): API key for authentication (legacy parameter, now uses secrets)
         temperature (float): Temperature parameter for response generation
         max_tokens (int): Maximum tokens for response
         file_content (str, optional): Content of uploaded file if any
@@ -48,34 +48,24 @@ def handle_chat_message(user_input, message_history, selected_model_name, model_
         })
     
     try:
-        # Prepare the API request
-        url = API_ENDPOINTS["chat"]
-        headers = {
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {api_key}"
-        }
+        # Call the Euron API using our utility function
+        response_data = call_euron_api(
+            messages=messages,
+            model_id=model_id,
+            temperature=temperature,
+            max_tokens=max_tokens
+        )
         
-        payload = {
-            "messages": messages,
-            "model": model_id,
-            "max_tokens": max_tokens,
-            "temperature": temperature
-        }
-        
-        # Send the request
-        response = requests.post(url, headers=headers, json=payload)
-        response.raise_for_status()  # Raise exception for HTTP errors
-        
-        data = response.json()
+        # Check for errors in the response
+        if "error" in response_data:
+            return f"Error: {response_data['error']}"
         
         # Extract the assistant's message from the response
-        if "choices" in data and len(data["choices"]) > 0:
-            assistant_message = data["choices"][0]["message"]["content"]
+        if "choices" in response_data and len(response_data["choices"]) > 0:
+            assistant_message = response_data["choices"][0]["message"]["content"]
             return assistant_message
         else:
             return "Sorry, I couldn't generate a response. Please try again."
     
-    except requests.exceptions.RequestException as e:
-        return f"Error communicating with the API: {str(e)}"
     except Exception as e:
         return f"An error occurred: {str(e)}"
