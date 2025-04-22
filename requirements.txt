@@ -8,3 +8,7 @@ matplotlib==3.7.2
 PyPDF2==3.0.1
 fpdf 
 python-docx
+sqlite3
+datetime
+os
+uuid
