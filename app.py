@@ -124,7 +124,7 @@ def main():
         st.session_state.temperature = temperature
         
         # Max tokens slider
-        max_tokens = st.slider("Max Tokens", min_value=100, max_value=2500, value=1000, step=100)
+        max_tokens = st.slider("Max Tokens", min_value=100, max_value=3000, value=1000, step=100)
         st.session_state.max_tokens = max_tokens
         
         # Clear chat button
