@@ -6,7 +6,7 @@ from file_handler import process_uploaded_file
 from image_handler import generate_image
 from utils import initialize_session_state
 from api_utils import get_euron_api_key
-from db_tool import db_logger
+from database_handler import DatabaseLogger
 import io
 from PIL import Image
 from fpdf import FPDF
