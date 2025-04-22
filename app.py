@@ -158,6 +158,33 @@ def main():
                         mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                     )
     
+        # Admin authentication section
+        admin_expander = st.expander("Admin Access", expanded=False)
+        with admin_expander:
+            admin_password = st.text_input("Admin Password", type="password")
+            
+            # Get admin password from secrets
+            correct_password = None
+            try:
+                correct_password = st.secrets["admin_password"]
+            except:
+                st.warning("Admin password not configured in secrets")
+            
+            is_admin = correct_password and admin_password == correct_password
+            
+            if is_admin:
+                st.success("Admin authenticated!")
+                # Admin section for database stats
+                st.subheader("Admin Stats")
+                if st.button("Refresh Stats"):
+                    stats = db_logger.get_stats()
+                    st.write(f"Total Sessions: {stats['total_sessions']}")
+                    st.write(f"Total Interactions: {stats['total_interactions']}")
+                    st.write(f"Most Popular Model: {stats['most_popular_model']} ({stats['most_popular_model_count']} uses)")
+            elif admin_password and not is_admin:
+                st.error("Incorrect password")
+    
+    
     # Main content area
     col1, col2 = st.columns([3, 1])
     
