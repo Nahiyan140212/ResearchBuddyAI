@@ -8,6 +8,75 @@ from utils import initialize_session_state
 from api_utils import get_euron_api_key
 import io
 from PIL import Image
+from fpdf import FPDF
+from docx import Document
+import base64
+
+def create_pdf(messages):
+    """Create a PDF from chat messages."""
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Arial", size=12)
+    
+    # Add a title
+    pdf.set_font("Arial", 'B', 16)
+    pdf.cell(200, 10, "ResearchBuddy AI Chat History", ln=True, align='C')
+    pdf.ln(10)
+    
+    # Reset font for content
+    pdf.set_font("Arial", size=12)
+    
+    # Add chat messages
+    for message in messages:
+        role = message["role"].upper()
+        content = message["content"]
+        
+        # Add role with appropriate styling
+        if role == "USER":
+            pdf.set_text_color(0, 0, 255)  # Blue for user
+        else:
+            pdf.set_text_color(0, 128, 0)  # Green for assistant
+            
+        pdf.set_font("Arial", 'B', 12)
+        pdf.cell(200, 10, f"{role}:", ln=True)
+        
+        # Reset styling for content
+        pdf.set_text_color(0, 0, 0)  # Black for content
+        pdf.set_font("Arial", size=12)
+        
+        # Add content with multi-cell for proper wrapping
+        pdf.multi_cell(0, 10, content)
+        pdf.ln(5)
+    
+    return pdf.output(dest="S").encode("latin1")
+
+def create_docx(messages):
+    """Create a DOCX from chat messages."""
+    doc = Document()
+    
+    # Add a title
+    doc.add_heading("ResearchBuddy AI Chat History", 0)
+    
+    # Add chat messages
+    for message in messages:
+        role = message["role"].upper()
+        content = message["content"]
+        
+        # Add message with role as heading
+        doc.add_heading(f"{role}:", 2)
+        doc.add_paragraph(content)
+        doc.add_paragraph()  # Add space between messages
+    
+    # Save to memory
+    buffer = io.BytesIO()
+    doc.save(buffer)
+    buffer.seek(0)
+    return buffer.getvalue()
+
+def get_download_link(file_bytes, file_name, file_type):
+    """Generate a download link for the file."""
+    b64 = base64.b64encode(file_bytes).decode()
+    return f'<a href="data:{file_type};base64,{b64}" download="{file_name}">Download {file_name}</a>'
 
 def main():
     """Main function to run the Streamlit app."""
@@ -65,6 +134,29 @@ def main():
             st.session_state.uploaded_file_name = None
             st.session_state.uploaded_image = None
             st.experimental_rerun()
+        
+        # Download chat options
+        if st.session_state.messages:
+            st.subheader("Download Chat")
+            download_format = st.radio("Select Format", ["PDF", "DOCX"])
+            
+            if st.button("Download Chat History"):
+                if download_format == "PDF":
+                    pdf_bytes = create_pdf(st.session_state.messages)
+                    st.download_button(
+                        label="Download as PDF",
+                        data=pdf_bytes,
+                        file_name="researchbuddy_chat.pdf",
+                        mime="application/pdf"
+                    )
+                else:  # DOCX
+                    docx_bytes = create_docx(st.session_state.messages)
+                    st.download_button(
+                        label="Download as DOCX",
+                        data=docx_bytes,
+                        file_name="researchbuddy_chat.docx",
+                        mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                    )
     
     # Main content area
     col1, col2 = st.columns([3, 1])
@@ -152,6 +244,32 @@ def main():
             
             # Add assistant response to chat history
             st.session_state.messages.append({"role": "assistant", "content": response})
+            
+            # Download latest response option
+            if st.button("Download Latest Response"):
+                # Create a document with just the latest response
+                last_message = st.session_state.messages[-1]
+                
+                # Let user choose format
+                download_col1, download_col2 = st.columns(2)
+                with download_col1:
+                    if st.button("Download as PDF"):
+                        pdf_bytes = create_pdf([last_message])
+                        st.download_button(
+                            label="Download PDF",
+                            data=pdf_bytes,
+                            file_name="researchbuddy_response.pdf",
+                            mime="application/pdf"
+                        )
+                with download_col2:
+                    if st.button("Download as DOCX"):
+                        docx_bytes = create_docx([last_message])
+                        st.download_button(
+                            label="Download DOCX",
+                            data=docx_bytes,
+                            file_name="researchbuddy_response.docx",
+                            mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                        )
 
 if __name__ == "__main__":
     main()
