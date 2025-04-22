@@ -1,11 +1,14 @@
 import streamlit as st
 import os
+import time
+import uuid
 from config import AVAILABLE_MODELS, MODEL_CAPABILITIES, DEFAULT_MODEL
 from chat_handler import handle_chat_message
 from file_handler import process_uploaded_file
 from image_handler import generate_image
 from utils import initialize_session_state
 from api_utils import get_euron_api_key
+from database_handler import DatabaseLogger
 import io
 from PIL import Image
 from fpdf import FPDF
@@ -78,14 +81,35 @@ def get_download_link(file_bytes, file_name, file_type):
     b64 = base64.b64encode(file_bytes).decode()
     return f'<a href="data:{file_type};base64,{b64}" download="{file_name}">Download {file_name}</a>'
 
+def initialize_database_logger():
+    """Initialize the database logger if not already in session state."""
+    if 'db_logger' not in st.session_state:
+        st.session_state.db_logger = DatabaseLogger()
+    return st.session_state.db_logger
+
+def ensure_session_id():
+    """Ensure we have a unique session ID for this chat session."""
+    if 'session_id' not in st.session_state:
+        st.session_state.session_id = str(uuid.uuid4())
+    return st.session_state.session_id
+
 def main():
     """Main function to run the Streamlit app."""
     st.set_page_config(page_title="ResearchBuddy AI: A Multi-Model AI Assistant", layout="wide")
     
     st.title("ResearchBuddy AI: A Multi-Model AI Assistant")
     
-    # Initialize session state
+    # Initialize session state and database
     initialize_session_state()
+    db_logger = initialize_database_logger()
+    session_id = ensure_session_id()
+    
+    # Log the session with some browser info if available
+    try:
+        user_agent = st.experimental_get_query_params().get('user_agent', [None])[0]
+        db_logger.log_session(session_id, user_browser=user_agent)
+    except:
+        db_logger.log_session(session_id)
     
     # Sidebar for model selection and settings
     with st.sidebar:
@@ -157,6 +181,14 @@ def main():
                         file_name="researchbuddy_chat.docx",
                         mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                     )
+        
+        # Admin section for database stats (hidden by default)
+        with st.expander("Admin Stats", expanded=False):
+            if st.button("Refresh Stats"):
+                stats = db_logger.get_stats()
+                st.write(f"Total Sessions: {stats['total_sessions']}")
+                st.write(f"Total Interactions: {stats['total_interactions']}")
+                st.write(f"Most Popular Model: {stats['most_popular_model']} ({stats['most_popular_model_count']} uses)")
     
     # Main content area
     col1, col2 = st.columns([3, 1])
@@ -183,11 +215,27 @@ def main():
         image_prompt = st.text_input("Image Description")
         if st.button("Generate Image") and image_prompt:
             with st.spinner("Generating image..."):
+                start_time = time.time()
                 image_result = generate_image(
                     image_prompt, 
                     api_key,  # This parameter is now ignored but kept for compatibility
                     selected_model
                 )
+                execution_time_ms = int((time.time() - start_time) * 1000)
+                
+                # Log the image generation request
+                db_logger.log_interaction(
+                    session_id=session_id,
+                    model_name=selected_model,
+                    model_id=AVAILABLE_MODELS[selected_model],
+                    temperature=st.session_state.temperature,
+                    max_tokens=st.session_state.max_tokens,
+                    user_query=f"[IMAGE GENERATION] {image_prompt}",
+                    model_response="Image generated successfully" if "image" in image_result else f"Error: {image_result.get('error')}",
+                    has_image=True,
+                    execution_time_ms=execution_time_ms
+                )
+                
                 if "image" in image_result:
                     st.image(image_result["image"], caption=image_prompt)
                 else:
@@ -229,6 +277,9 @@ def main():
                     if has_image and not model_supports_images:
                         st.warning(f"Note: {selected_model} doesn't fully support image analysis. For best results with images, try using Google Gemini 2.5 Pro Exp.")
                     
+                    # Time the execution
+                    start_time = time.time()
+                    
                     response = handle_chat_message(
                         user_input,
                         st.session_state.messages,
@@ -240,6 +291,25 @@ def main():
                         st.session_state.uploaded_file_content,
                         st.session_state.uploaded_image if has_image else None
                     )
+                    
+                    # Calculate execution time
+                    execution_time_ms = int((time.time() - start_time) * 1000)
+                    
+                    # Log the interaction to database
+                    db_logger.log_interaction(
+                        session_id=session_id,
+                        model_name=selected_model,
+                        model_id=AVAILABLE_MODELS[selected_model],
+                        temperature=st.session_state.temperature,
+                        max_tokens=st.session_state.max_tokens,
+                        user_query=user_input,
+                        model_response=response,
+                        has_file=st.session_state.uploaded_file_name is not None,
+                        file_name=st.session_state.uploaded_file_name,
+                        has_image=has_image,
+                        execution_time_ms=execution_time_ms
+                    )
+                    
                     message_placeholder.markdown(response)
             
             # Add assistant response to chat history
