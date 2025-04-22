@@ -21,6 +21,7 @@ MODEL_CAPABILITIES = {
         "File Analysis": True,
         "Image Generation": False,
         "Code Generation": True,
+        "Real Time Internet Search": False,
         "Image Analysis": False
     },
     "OpenAI GPT 4.1 Mini": {
@@ -28,6 +29,7 @@ MODEL_CAPABILITIES = {
         "File Analysis": True,
         "Image Generation": False,
         "Code Generation": True,
+        "Real Time Internet Search": False,
         "Image Analysis": False
     },
     "Google Gemini 2.5 Pro Exp": {
@@ -35,6 +37,7 @@ MODEL_CAPABILITIES = {
         "File Analysis": True,
         "Image Generation": True,
         "Code Generation": True,
+        "Real Time Internet Search": False,
         "Image Analysis": True
     },
     "Google Gemini 2.0 Flash": {
@@ -42,6 +45,7 @@ MODEL_CAPABILITIES = {
         "File Analysis": True,
         "Image Generation": False,
         "Code Generation": True,
+        "Real Time Internet Search": True,
         "Image Analysis": False
     },
     "Google Gemini 2.0 Flash Exp": {
@@ -49,6 +53,7 @@ MODEL_CAPABILITIES = {
         "File Analysis": True,
         "Image Generation": True,
         "Code Generation": True,
+        "Real Time Internet Search": False,
         "Image Analysis": True
     },
     "Meta Llama 4 Scout": {
@@ -56,6 +61,7 @@ MODEL_CAPABILITIES = {
         "File Analysis": True,
         "Image Generation": False,
         "Code Generation": True,
+        "Real Time Internet Search": False,
         "Image Analysis": False
     },
     "Meta Llama 4 Maverick": {
@@ -63,6 +69,7 @@ MODEL_CAPABILITIES = {
         "File Analysis": True,
         "Image Generation": False,
         "Code Generation": True,
+        "Real Time Internet Search": False,
         "Image Analysis": False
     },
     "Meta Llama 3.3 70b": {
@@ -70,6 +77,7 @@ MODEL_CAPABILITIES = {
         "File Analysis": True,
         "Image Generation": False,
         "Code Generation": True,
+        "Real Time Internet Search": False,
         "Image Analysis": False
     },
     "DeepSeek R1 Distilled 70B": {
@@ -77,6 +85,7 @@ MODEL_CAPABILITIES = {
         "File Analysis": True,
         "Image Generation": False,
         "Code Generation": True,
+        "Real Time Internet Search": False,
         "Image Analysis": False
     },
     "Qwen QwQ 32B": {
@@ -84,6 +93,7 @@ MODEL_CAPABILITIES = {
         "File Analysis": True,
         "Image Generation": False,
         "Code Generation": True,
+        "Real Time Internet Search": False,
         "Image Analysis": False
     },
     "Mistral Saba 24B": {
@@ -91,6 +101,7 @@ MODEL_CAPABILITIES = {
         "File Analysis": True,
         "Image Generation": False,
         "Code Generation": True,
+        "Real Time Internet Search": False,
         "Image Analysis": False
     }
 }
@@ -98,6 +109,7 @@ MODEL_CAPABILITIES = {
 # Map for selecting appropriate model for special tasks
 SPECIALIZED_MODELS = {
     "image_generation": "gemini-2.0-flash-exp",        # Updated to use the new model
+    "Real Time Internet Search": "Google Gemini 2.0 Flash", #Internet search
     "image_analysis": "gemini-2.5-pro-exp-03-25",      # Default model for image analysis
     "code_analysis": "gpt-4.1-mini",                   # Default model for code analysis
     "document_analysis": "llama-4-maverick-17b-128e-instruct"  # Default model for document analysis
