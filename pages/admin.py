@@ -12,7 +12,7 @@ def main():
     st.title("ResearchBuddy Admin Dashboard")
     
     if "admin_authenticated" not in st.session_state:
-    st.session_state.admin_authenticated = False
+        st.session_state.admin_authenticated = False
 
     if not st.session_state.admin_authenticated:
         with st.form("login_form"):
