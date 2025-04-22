@@ -11,25 +11,28 @@ def main():
     
     st.title("ResearchBuddy Admin Dashboard")
     
-    # Password protection
     if "admin_authenticated" not in st.session_state:
-        st.session_state.admin_authenticated = False
-    
+    st.session_state.admin_authenticated = False
+
     if not st.session_state.admin_authenticated:
         with st.form("login_form"):
             password = st.text_input("Admin Password", type="password")
             submit = st.form_submit_button("Login")
-            
-            if submit:
-                # Simple password check - in production, use a more secure method
-                # and store password securely in environment variables or secrets
-                if password == "admin123":  # Replace with a secure password
-                    st.session_state.admin_authenticated = True
-                    st.experimental_rerun()
-                else:
-                    st.error("Incorrect password")
-        return
     
+            if submit:
+                try:
+                    # Securely compare with password from Streamlit secrets
+                    correct_password = st.secrets["admin_password"]
+                    if password == correct_password:
+                        st.session_state.admin_authenticated = True
+                        st.success("Login successful!")
+                        st.experimental_rerun()
+                    else:
+                        st.error("Incorrect password")
+                except KeyError:
+                    st.error("Admin password not configured in Streamlit secrets")
+        st.stop()  # Stop the app here if not authenticated
+
     # Initialize database connection
     db_logger = DatabaseLogger()
     
