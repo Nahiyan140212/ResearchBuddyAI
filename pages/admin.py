@@ -4,6 +4,7 @@ import plotly.express as px
 from database_handler import DatabaseLogger
 import datetime
 
+
 def main():
     """Admin dashboard for viewing chat logs and statistics."""
     st.set_page_config(page_title="ResearchBuddy Admin", layout="wide")
