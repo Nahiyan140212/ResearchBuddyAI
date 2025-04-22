@@ -23,7 +23,7 @@ MODEL_CAPABILITIES = {
         "Code Generation": True,
         "Real Time Internet Search": False,
         "Image Analysis": False,
-        ""Fast replies, chatbots"": True
+        "Fast replies, chatbots": True
     },
     "OpenAI GPT 4.1 Mini": {
         "Text Generation": True,
