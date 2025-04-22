@@ -13,6 +13,9 @@ from fpdf import FPDF
 from docx import Document
 import base64
 
+
+db_logger = DatabaseLogger()
+
 def create_pdf(messages):
     """Create a PDF from chat messages."""
     pdf = FPDF()
