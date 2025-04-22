@@ -23,7 +23,7 @@ MODEL_CAPABILITIES = {
         "Code Generation": True,
         "Real Time Internet Search": False,
         "Image Analysis": False,
-        "Best For": "Fast replies, chatbots"
+        ""Fast replies, chatbots"": True
     },
     "OpenAI GPT 4.1 Mini": {
         "Text Generation": True,
@@ -32,7 +32,7 @@ MODEL_CAPABILITIES = {
         "Code Generation": True,
         "Real Time Internet Search": False,
         "Image Analysis": False,
-        "Best For": "Smarter gen, code"
+        "Smarter gen, code": True
         
     },
     "Google Gemini 2.5 Pro Exp": {
@@ -42,7 +42,7 @@ MODEL_CAPABILITIES = {
         "Code Generation": True,
         "Real Time Internet Search": False,
         "Image Analysis": True,
-        "Best For": "Complex tasks, code, LLM"
+        "Complex tasks, code, LLM": True
     },
     "Google Gemini 2.0 Flash": {
         "Text Generation": True,
@@ -51,7 +51,7 @@ MODEL_CAPABILITIES = {
         "Code Generation": True,
         "Real Time Internet Search": True,
         "Image Analysis": False,
-        "Best For": "Summarization, short Q&A, Real time internet search"
+        "Summarization, short Q&A, Real time internet search": True
     },
     "Google Gemini 2.0 Flash Exp": {
         "Text Generation": True,
@@ -60,7 +60,7 @@ MODEL_CAPABILITIES = {
         "Code Generation": True,
         "Real Time Internet Search": False,
         "Image Analysis": True,
-        "Best For": "Image Generation, Image Analysis"
+        "Image Generation, Image Analysis" : True
     },
     "Meta Llama 4 Scout": {
         "Text Generation": True,
@@ -69,7 +69,7 @@ MODEL_CAPABILITIES = {
         "Code Generation": True,
         "Real Time Internet Search": False,
         "Image Analysis": False,
-        "Best For": "Light Assistant and Ideas"
+        "Light Assistant and Ideas" : True
     },
     "Meta Llama 4 Maverick": {
         "Text Generation": True,
@@ -78,7 +78,7 @@ MODEL_CAPABILITIES = {
         "Code Generation": True,
         "Real Time Internet Search": False,
         "Image Analysis": False,
-        "Best For": "Balanced"
+        "Balanced" : True
     },
     "Meta Llama 3.3 70b": {
         "Text Generation": True,
@@ -87,7 +87,7 @@ MODEL_CAPABILITIES = {
         "Code Generation": True,
         "Real Time Internet Search": False,
         "Image Analysis": False,
-        "Best For": "Balanced for all round use"
+        "Balanced for all round use" : True
     },
     "DeepSeek R1 Distilled 70B": {
         "Text Generation": True,
@@ -96,7 +96,7 @@ MODEL_CAPABILITIES = {
         "Code Generation": True,
         "Real Time Internet Search": False,
         "Image Analysis": False,
-        "Best For": "Creative and Brainstorming"
+        "Creative and Brainstorming" : True
     },
     "Qwen QwQ 32B": {
         "Text Generation": True,
@@ -105,7 +105,7 @@ MODEL_CAPABILITIES = {
         "Code Generation": True,
         "Real Time Internet Search": False,
         "Image Analysis": False,
-        "Best For": "Multilingual and Logic"
+        "Multilingual and Logic" : True
     },
     "Mistral Saba 24B": {
         "Text Generation": True,
@@ -114,7 +114,7 @@ MODEL_CAPABILITIES = {
         "Code Generation": True,
         "Real Time Internet Search": False,
         "Image Analysis": False,
-        "Best For": "Summarization and Coding"
+        "Summarization and Coding" : True
     }
 }
 
